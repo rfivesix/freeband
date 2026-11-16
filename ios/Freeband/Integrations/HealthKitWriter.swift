@@ -17,6 +17,7 @@ struct HealthKitWriter: HealthKitWriting {
     private func type(_ kind: HealthExportKind) -> HKSampleType {
         switch kind {
         case .steps: HKQuantityType(.stepCount)
+        case .activeEnergy: HKQuantityType(.activeEnergyBurned)
         case .heartRate: HKQuantityType(.heartRate)
         case .restingHeartRate: HKQuantityType(.restingHeartRate)
         case .oxygen: HKQuantityType(.oxygenSaturation)
@@ -43,6 +44,10 @@ struct HealthKitWriter: HealthKitWriting {
         case .steps:
             guard sample.value > 0, sample.start < sample.end else { throw WriterError.invalidSample }
             object = HKQuantitySample(type: HKQuantityType(.stepCount), quantity: HKQuantity(unit: .count(), doubleValue: Double(sample.value)),
+                                      start: sample.start, end: sample.end, metadata: metadata)
+        case .activeEnergy:
+            guard sample.value > 0, sample.start < sample.end else { throw WriterError.invalidSample }
+            object = HKQuantitySample(type: HKQuantityType(.activeEnergyBurned), quantity: HKQuantity(unit: .kilocalorie(), doubleValue: Double(sample.value)),
                                       start: sample.start, end: sample.end, metadata: metadata)
         case .heartRate, .restingHeartRate:
             guard ValidRange.heartRate.contains(sample.value) else { throw WriterError.invalidSample }

@@ -174,6 +174,7 @@ final class FakeWriter: HealthKitWriting {
         await summaryService.enable(); await settle(summaryService)
         let exported = try fresh.fetch(FetchDescriptor<HealthExportLedgerRow>())
         check(exported.contains { $0.kind == "steps" && $0.state == "saved" }, "summary steps exported")
+        check(exported.contains { $0.kind == "activeEnergy" && $0.state == "saved" }, "summary active energy exported")
         check(exported.contains { $0.kind == "restingHeartRate" && $0.state == "saved" }, "band resting HR exported")
         check(exported.contains { $0.kind == "heartRate" && $0.state == "saved" }, "live HR exported")
         check(exported.filter { $0.kind == "heartRate" && $0.state == "saved" }.count == 2, "distinct live observations within a minute are retained")

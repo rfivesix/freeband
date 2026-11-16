@@ -133,6 +133,7 @@ final class HealthExportService: ObservableObject {
                 let authoritative: [HealthExportKind] = complete == nil ? [] : HealthExportKind.allCases.filter {
                     switch $0 {
                     case .steps: return hasMinutes || hasSummary
+                    case .activeEnergy: return hasSummary
                     case .heartRate: return hasMinutes || hasSleep || hasManual
                     case .oxygen: return hasMinutes || hasSleep || hasManual
                     case .restingHeartRate: return hasSummary
@@ -275,6 +276,9 @@ final class HealthExportService: ObservableObject {
                 result.removeAll { $0.kind == .steps && $0.start >= start && $0.start < start.addingTimeInterval(86_400) }
                 result.append(.init(namespace: namespace, kind: .steps, start: start, end: end, value: steps))
             }
+            if let energy = expected.activeCalories, energy > 0 {
+                result.append(.init(namespace: namespace, kind: .activeEnergy, start: start, end: end, value: energy))
+            }
             if let hr = ValidRange.hr(expected.hrResting) {
                 result.append(.init(namespace: namespace, kind: .restingHeartRate, start: start, end: end, value: hr))
             }
@@ -379,6 +383,9 @@ final class HealthExportService: ObservableObject {
                     return entry.start < dayEnd && Date(timeIntervalSince1970: TimeInterval(endSeconds)) > start
                 }
                 if !overlaps { result.append(sample) }
+            }
+            if let value = d.activeCalories, value > 0 {
+                result.append(.init(namespace: namespace, kind: .activeEnergy, start: start, end: end, value: value))
             }
             if let value = ValidRange.hr(d.hrResting) {
                 result.append(.init(namespace: namespace, kind: .restingHeartRate, start: start, end: end, value: value))

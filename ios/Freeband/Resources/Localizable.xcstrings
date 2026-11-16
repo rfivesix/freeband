@@ -2732,18 +2732,18 @@
         }
       }
     },
-    "Freeband can write eligible band steps, heart rate, resting heart rate, blood oxygen and sleep stages to Apple Health. It never reads Apple Health." : {
+    "Freeband can write eligible band steps, active calories, heart rate, resting heart rate, blood oxygen and sleep stages to Apple Health. It never reads Apple Health." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Freeband can write eligible band steps, heart rate, resting heart rate, blood oxygen and sleep stages to Apple Health. It never reads Apple Health."
+            "value" : "Freeband can write eligible band steps, active calories, heart rate, resting heart rate, blood oxygen and sleep stages to Apple Health. It never reads Apple Health."
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Freeband, uygun bant adımlarını, nabzı, dinlenik nabzı, kandaki oksijeni ve uyku evrelerini Apple Health’e yazabilir. Apple Health verilerini asla okumaz."
+            "value" : "Freeband, uygun bant adımlarını, aktif kalorileri, nabzı, dinlenik nabzı, kandaki oksijeni ve uyku evrelerini Apple Health’e yazabilir. Apple Health verilerini asla okumaz."
           }
         }
       }

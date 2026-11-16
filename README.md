@@ -78,11 +78,11 @@ Turning export off, removing a band, or deleting local data does not delete
 Health entries. Health-side deletions cannot be detected. Deleting local data also prevents older
 history from being automatically exported again on that phone.
 
-The export also supports the band's daily resting-heart-rate estimate and individually timed
+The export also supports the band's daily active-calorie total and resting-heart-rate estimate and individually timed
 blood-oxygen readings. A daily step summary is exported as one cumulative interval when detailed
 steps are incomplete; it is replaced by minute records only when a complete day is available.
-Daily oxygen averages lack an exact measurement time and are not exported. RMSSD is not written
-as SDNN, and Freeband's recovery, sleep and strain scores are not mapped to unrelated Health types.
+The calorie total is written as one elapsed-day interval (its kcal unit is inferred from the band display); minute calories are not added on top. Daily oxygen averages lack an exact measurement time and are not exported. RMSSD is not written
+as SDNN. The band's stress score has no equivalent HealthKit quantity; its moving minutes are not necessarily Apple Move Time. Freeband does not map these or its recovery, sleep and strain scores to unrelated Health types.
 
 
 ## Repository

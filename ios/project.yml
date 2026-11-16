@@ -12,7 +12,7 @@ settings:
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     SWIFT_EMIT_LOC_STRINGS: YES
     MARKETING_VERSION: "0.5.3"
-    CURRENT_PROJECT_VERSION: "1"
+    CURRENT_PROJECT_VERSION: "2"
 targets:
   Freeband:
     type: application
@@ -35,8 +35,8 @@ targets:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSBluetoothAlwaysUsageDescription: Freeband uses Bluetooth to talk directly to the band on your wrist.
-        NSHealthUpdateUsageDescription: Freeband writes your band steps, heart rate, resting heart rate, blood oxygen and sleep stages to Apple Health when you choose to export them.
-        NSHealthShareUsageDescription: Freeband uses HealthKit to export your band steps, heart rate, resting heart rate, blood oxygen and sleep stages to Apple Health. Freeband does not read health data.
+        NSHealthUpdateUsageDescription: Freeband writes your band steps, active calories, heart rate, resting heart rate, blood oxygen and sleep stages to Apple Health when you choose to export them.
+        NSHealthShareUsageDescription: Freeband uses HealthKit to export your band steps, active calories, heart rate, resting heart rate, blood oxygen and sleep stages to Apple Health. Freeband does not read health data.
         NSLocationWhenInUseUsageDescription: If you turn on Share location with the band, Freeband sends this phone's location to your band when the band asks for it. It goes nowhere else.
         ITSAppUsesNonExemptEncryption: false
         LSApplicationCategoryType: public.app-category.healthcare-fitness
