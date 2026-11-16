@@ -10,6 +10,7 @@ struct BandOptionsView: View {
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var link: BandLink
     @Query private var matches: [Band]
+    @AppStorage(AppModel.backgroundRefreshEnabledKey) private var backgroundRefresh = true
     @AppStorage(AppModel.stayConnectedKey) private var stayConnected = false
     @AppStorage(AppModel.clearBandKey) private var clearBand = false
     @AppStorage(AppModel.shareLocationKey) private var shareLocation = false
@@ -38,7 +39,11 @@ struct BandOptionsView: View {
             VStack(alignment: .leading, spacing: FBSpace.l) {
                 group(String(localized: "Connection")) {
                     ListRow(title: String(localized: "Stay connected"), subtitle: stayConnectedSubtitle, systemImage: "link",
-                            accessory: .toggle(Binding(get: { stayConnected }, set: { model.setStayConnected($0) })),
+                            accessory: .toggle(Binding(get: { stayConnected }, set: { model.setStayConnected($0) })))
+                    ListRow(title: String(localized: "Background app refresh sync"),
+                            subtitle: String(localized: "Syncs when iOS allows. Stay connected syncs separately."),
+                            systemImage: "arrow.triangle.2.circlepath",
+                            accessory: .toggle(Binding(get: { backgroundRefresh }, set: { model.setBackgroundRefreshSync($0) })),
                             showsDivider: false)
                 }
                 group(String(localized: "Records")) {

@@ -14,8 +14,10 @@ extension AppModel {
     // MARK: background sync
 
     static let backgroundRefreshID = "dev.cobanov.freeband.sync"
+    static let backgroundRefreshEnabledKey = BackgroundRefreshPolicy.key
+
     /// A sync nobody asked for runs when the last complete one is older than this,
-    static let backgroundSyncAfter: TimeInterval = 60 * 60
+    static let backgroundSyncAfter: TimeInterval = 15 * 60
     /// and at most this often, so a band that can't be synced isn't asked on every event.
     static let backgroundSyncRetry: TimeInterval = 15 * 60
 
@@ -30,7 +32,12 @@ extension AppModel {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: backgroundRefreshID, using: .main) { task in
             MainActor.assumeIsolated {
                 guard let model = AppModel.shared else { return task.setTaskCompleted(success: false) }
+                model.link.note("background refresh: task delivered")
                 model.scheduleBackgroundRefresh()
+                guard BackgroundRefreshPolicy.isEnabled() else {
+                    model.link.note("background refresh: ignored, disabled")
+                    return task.setTaskCompleted(success: true)
+                }
                 var finished = false
                 task.expirationHandler = { Task { @MainActor in
                     guard !finished else { return }
@@ -52,10 +59,25 @@ extension AppModel {
     }
 
     func scheduleBackgroundRefresh() {
-        guard !isDemo else { return }
+        guard !isDemo, BackgroundRefreshPolicy.isEnabled() else { return }
         let request = BGAppRefreshTaskRequest(identifier: Self.backgroundRefreshID)
         request.earliestBeginDate = Date().addingTimeInterval(Self.backgroundSyncAfter)
-        try? BGTaskScheduler.shared.submit(request)
+        do {
+            try BGTaskScheduler.shared.submit(request)
+            link.note("background refresh: request accepted")
+        } catch {
+            let error = error as NSError
+            link.note("background refresh: request failed (\(error.domain), \(error.code))")
+        }
+    }
+
+    func setBackgroundRefreshSync(_ enabled: Bool) {
+        UserDefaults.standard.set(enabled, forKey: Self.backgroundRefreshEnabledKey)
+        if enabled { scheduleBackgroundRefresh() }
+        else {
+            BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: Self.backgroundRefreshID)
+            link.note("background refresh: pending request cancelled")
+        }
     }
 
     /// With Stay connected on, Bluetooth events wake the app: the held session opening (the band
