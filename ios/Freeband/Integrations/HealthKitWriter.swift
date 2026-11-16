@@ -20,6 +20,7 @@ struct HealthKitWriter: HealthKitWriting {
         case .activeEnergy: HKQuantityType(.activeEnergyBurned)
         case .heartRate: HKQuantityType(.heartRate)
         case .restingHeartRate: HKQuantityType(.restingHeartRate)
+        case .heartRateVariability: HKQuantityType(.heartRateVariabilitySDNN)
         case .oxygen: HKQuantityType(.oxygenSaturation)
         case .sleep: HKCategoryType(.sleepAnalysis)
         }
@@ -53,6 +54,10 @@ struct HealthKitWriter: HealthKitWriting {
             guard ValidRange.heartRate.contains(sample.value) else { throw WriterError.invalidSample }
             let unit = HKUnit.count().unitDivided(by: .minute())
             object = HKQuantitySample(type: sample.kind == .heartRate ? HKQuantityType(.heartRate) : HKQuantityType(.restingHeartRate), quantity: HKQuantity(unit: unit, doubleValue: Double(sample.value)),
+                                      start: sample.start, end: sample.end, metadata: metadata)
+        case .heartRateVariability:
+            guard sample.value >= 0, sample.start < sample.end else { throw WriterError.invalidSample }
+            object = HKQuantitySample(type: HKQuantityType(.heartRateVariabilitySDNN), quantity: HKQuantity(unit: .secondUnit(with: .milli), doubleValue: Double(sample.value)),
                                       start: sample.start, end: sample.end, metadata: metadata)
         case .oxygen:
             guard ValidRange.spo2.contains(sample.value) else { throw WriterError.invalidSample }

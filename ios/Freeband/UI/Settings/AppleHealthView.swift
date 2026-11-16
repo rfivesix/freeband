@@ -13,7 +13,7 @@ private struct AppleHealthDetails: View {
     var body: some View {
         Form {
             Section {
-                Text("Freeband can write eligible band steps, active calories, heart rate, resting heart rate, blood oxygen and sleep stages to Apple Health. It never reads Apple Health.")
+                Text("Freeband can write eligible band steps, active calories, heart rate, resting heart rate, heart rate variability, blood oxygen and sleep stages to Apple Health. It never reads Apple Health.")
                 Text("Turning on exports eligible history stored on this phone and later syncs. Corrections can update or remove entries Freeband previously wrote.")
                 Text("Use one exporting iPhone per band. Reinstalling or using another phone can create duplicates. Health-side deletions cannot be detected.")
                 Text("Deleting Freeband data or removing a band does not delete Health entries. Older history on this phone will not be exported again.")
@@ -26,6 +26,7 @@ private struct AppleHealthDetails: View {
                     LabeledContent(String(localized: "Active calories"), value: permission(.activeEnergy))
                     LabeledContent(String(localized: "Heart rate"), value: permission(.heartRate))
                     LabeledContent(String(localized: "Resting heart rate"), value: permission(.restingHeartRate))
+                    LabeledContent(String(localized: "Heart rate variability"), value: permission(.heartRateVariability))
                     LabeledContent(String(localized: "Blood oxygen"), value: permission(.oxygen))
                     LabeledContent(String(localized: "Sleep stages"), value: permission(.sleep))
                     if let last = service.lastSuccess {

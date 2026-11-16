@@ -3,7 +3,7 @@ import Foundation
 // This file contains no HealthKit calls. In particular, a missing source value is only
 // evidence of deletion when its entire reconciliation scope was successfully rebuilt.
 enum HealthExportKind: String, Codable, CaseIterable {
-    case steps, activeEnergy, heartRate, restingHeartRate, oxygen, sleep
+    case steps, activeEnergy, heartRate, restingHeartRate, heartRateVariability, oxygen, sleep
 }
 
 struct HealthExportSample: Codable, Equatable {
@@ -11,7 +11,7 @@ struct HealthExportSample: Codable, Equatable {
     let kind: HealthExportKind
     let start: Date
     let end: Date
-    /// Count, kilocalories, beats per minute, percent, or a Freeband StageKind raw value for sleep.
+    /// Count, kilocalories, beats per minute, percent, rounded SDNN milliseconds, or a Freeband StageKind raw value for sleep.
     let value: Int
 
     /// The namespace is random; neither a MAC address nor a local SwiftData ID leaves the app.

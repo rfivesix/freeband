@@ -137,7 +137,7 @@ final class HealthExportService: ObservableObject {
                     case .heartRate: return hasMinutes || hasSleep || hasManual
                     case .oxygen: return hasMinutes || hasSleep || hasManual
                     case .restingHeartRate: return hasSummary
-                    case .sleep: return hasSleep
+                    case .sleep, .heartRateVariability: return hasSleep
                     }
                 }
                 let scopes = authoritative.map { HealthExportScope(namespace: namespace, kind: $0,
@@ -312,6 +312,10 @@ final class HealthExportService: ObservableObject {
             guard sleep.stageTimeline.count % 7 == 0, sleep.bedTime < sleep.wakeTime,
                   stages.allSatisfy({ $0.minutes > 0 && $0.start >= sleep.bedTime && $0.end <= sleep.wakeTime }) else { return nil }
             result += HealthExportMapping.sleep(stages, bed: sleep.bedTime, wake: sleep.wakeTime, namespace: namespace, eligible: true)
+            // RR comes directly from the verified source, not the derived nightly RMSSD.
+            guard let sourceSleep = expectedSleeps.first(where: { $0.sourceFileID == sleep.sourceFileID && $0.bedTime == sleep.bedTime }) else { return nil }
+            result += HealthExportMapping.variability(sourceSleep.rr, bed: sleep.bedTime, wake: sleep.wakeTime,
+                                                      namespace: namespace, eligible: true)
             // The source includes explicit start and interval for these observations. Check the
             // projection against the parsed source before exporting its timed series.
             guard let expected = expectedSleeps.first(where: { $0.sourceFileID == sleep.sourceFileID && $0.bedTime == sleep.bedTime }),
