@@ -14,6 +14,8 @@ extension AppModel {
     // MARK: background sync
 
     static let backgroundRefreshID = "dev.cobanov.freeband.sync"
+    static let backgroundRefreshEnabledKey = BackgroundRefreshPolicy.key
+
     /// A sync nobody asked for runs when the last complete one is older than this,
     static let backgroundSyncAfter: TimeInterval = 60 * 60
     /// and at most this often, so a band that can't be synced isn't asked on every event.
@@ -31,6 +33,7 @@ extension AppModel {
             MainActor.assumeIsolated {
                 guard let model = AppModel.shared else { return task.setTaskCompleted(success: false) }
                 model.scheduleBackgroundRefresh()
+                guard BackgroundRefreshPolicy.isEnabled() else { return task.setTaskCompleted(success: true) }
                 task.expirationHandler = { Task { @MainActor in AppModel.shared?.stop() } }
                 Task {
                     await model.backgroundSync("background refresh")
@@ -41,10 +44,16 @@ extension AppModel {
     }
 
     func scheduleBackgroundRefresh() {
-        guard !isDemo else { return }
+        guard !isDemo, BackgroundRefreshPolicy.isEnabled() else { return }
         let request = BGAppRefreshTaskRequest(identifier: Self.backgroundRefreshID)
         request.earliestBeginDate = Date().addingTimeInterval(Self.backgroundSyncAfter)
         try? BGTaskScheduler.shared.submit(request)
+    }
+
+    func setBackgroundRefreshSync(_ enabled: Bool) {
+        UserDefaults.standard.set(enabled, forKey: Self.backgroundRefreshEnabledKey)
+        if enabled { scheduleBackgroundRefresh() }
+        else { BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: Self.backgroundRefreshID) }
     }
 
     /// With Stay connected on, Bluetooth events wake the app: the held session opening (the band

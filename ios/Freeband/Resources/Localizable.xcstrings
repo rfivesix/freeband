@@ -6928,6 +6928,26 @@
           }
         }
       }
+    },
+    "Background app refresh sync": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arka planda uygulama yenilemeyle senkron"
+          }
+        }
+      }
+    },
+    "Syncs when iOS allows. Stay connected syncs separately.": {
+      "localizations": {
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOS izin verdiğinde senkronize eder. Bağlı kal seçeneği ayrı senkronize eder."
+          }
+        }
+      }
     }
   },
   "version": "1.0"
