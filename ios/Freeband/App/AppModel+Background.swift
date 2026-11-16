@@ -17,7 +17,7 @@ extension AppModel {
     static let backgroundRefreshEnabledKey = BackgroundRefreshPolicy.key
 
     /// A sync nobody asked for runs when the last complete one is older than this,
-    static let backgroundSyncAfter: TimeInterval = 60 * 60
+    static let backgroundSyncAfter: TimeInterval = 15 * 60
     /// and at most this often, so a band that can't be synced isn't asked on every event.
     static let backgroundSyncRetry: TimeInterval = 15 * 60
 
