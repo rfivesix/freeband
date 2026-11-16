@@ -32,8 +32,12 @@ extension AppModel {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: backgroundRefreshID, using: .main) { task in
             MainActor.assumeIsolated {
                 guard let model = AppModel.shared else { return task.setTaskCompleted(success: false) }
+                model.link.note("background refresh: task delivered")
                 model.scheduleBackgroundRefresh()
-                guard BackgroundRefreshPolicy.isEnabled() else { return task.setTaskCompleted(success: true) }
+                guard BackgroundRefreshPolicy.isEnabled() else {
+                    model.link.note("background refresh: ignored, disabled")
+                    return task.setTaskCompleted(success: true)
+                }
                 task.expirationHandler = { Task { @MainActor in AppModel.shared?.stop() } }
                 Task {
                     await model.backgroundSync("background refresh")
@@ -47,13 +51,22 @@ extension AppModel {
         guard !isDemo, BackgroundRefreshPolicy.isEnabled() else { return }
         let request = BGAppRefreshTaskRequest(identifier: Self.backgroundRefreshID)
         request.earliestBeginDate = Date().addingTimeInterval(Self.backgroundSyncAfter)
-        try? BGTaskScheduler.shared.submit(request)
+        do {
+            try BGTaskScheduler.shared.submit(request)
+            link.note("background refresh: request accepted")
+        } catch {
+            let error = error as NSError
+            link.note("background refresh: request failed (\(error.domain), \(error.code))")
+        }
     }
 
     func setBackgroundRefreshSync(_ enabled: Bool) {
         UserDefaults.standard.set(enabled, forKey: Self.backgroundRefreshEnabledKey)
         if enabled { scheduleBackgroundRefresh() }
-        else { BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: Self.backgroundRefreshID) }
+        else {
+            BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: Self.backgroundRefreshID)
+            link.note("background refresh: pending request cancelled")
+        }
     }
 
     /// With Stay connected on, Bluetooth events wake the app: the held session opening (the band
