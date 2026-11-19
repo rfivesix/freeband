@@ -43,7 +43,6 @@ extension AppModel {
                     guard !finished else { return }
                     finished = true
                     if model.backgroundSessionActive {
-                        model.healthExport.pause()
                         if model.backgroundOwnsLink { model.stop() }
                     }
                     task.setTaskCompleted(success: false)
@@ -96,7 +95,6 @@ extension AppModel {
     func backgroundSync(_ reason: String, now: Date = Date()) async {
         guard !isDemo, !backgroundSessionActive, UserDefaults.standard.bool(forKey: "onboarded"),
               let band = selectedBand(), !link.phase.isBusy else { return }
-        healthExport.resume()
         guard Self.backgroundSyncDue(lastSync: band.lastSyncAt, lastAttempt: lastBackgroundSync, now: now) else { return }
         lastBackgroundSync = now
         link.note("background sync: \(reason)")
@@ -160,7 +158,6 @@ extension AppModel {
         endSyncBackgroundTask()
         var awaitingSession = true
         syncBackgroundTask = UIApplication.shared.beginBackgroundTask(withName: "Sync") { [weak self] in
-            self?.healthExport.pause()
             if awaitingSession { self?.stop() }
             self?.endSyncBackgroundTask()
         }
@@ -168,8 +165,6 @@ extension AppModel {
         while link.phase.isBusy { try? await Task.sleep(for: .milliseconds(300)) }
         awaitingSession = false
         backgroundOwnsLink = false
-        if let processing = syncProcessingTask { await processing.value }
-        await healthExport.waitUntilIdle()
         // A held session opens again 2 s after another session ends, on a timer.
         try? await Task.sleep(for: .seconds(3))
         endSyncBackgroundTask()
